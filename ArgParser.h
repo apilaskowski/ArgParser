@@ -12,19 +12,19 @@
 #include <cmath>
 #include <tuple>
 
-namespace ArgParser {
+namespace argparser {
 
-    class ArgParser {
+    class argparser {
     private:
         std::vector<std::tuple<std::string, std::string, std::string>> args_types;
-        void show_usage(std::string);
-
     public:
-        ArgParser();
-        virtual ~ArgParser();
+        argparser();
+        virtual ~argparser();
 
         void parse_args(int, char *[]);
         std::unordered_map<std::string, std::string> args;
+
+        void show_usage(std::string);
 
         void addArgHandler(std::string, std::string, std::string);
     };

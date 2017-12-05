@@ -2,17 +2,13 @@
 // Created by Artur Laskowski on 10/11/2017.
 //
 
-#include "ArgParser.h"
+#include "argparser.h"
 
 
 typedef int64_t lint;
 
-ArgParser::ArgParser::ArgParser() {}
-ArgParser::ArgParser::~ArgParser() {
-    for(auto it = args.begin(); it != args.end(); ++it) {
-        std::cout << it->first << ": " << it->second << "\n";
-    }
-}
+argparser::argparser::argparser() {}
+argparser::argparser::~argparser() {}
 
 std::string fill_space(int shrt_size, int full_size) {
     std::string res = "";
@@ -22,7 +18,7 @@ std::string fill_space(int shrt_size, int full_size) {
     return res;
 }
 
-void ArgParser::ArgParser::show_usage(std::string name) {
+void argparser::argparser::show_usage(std::string name) {
     std::cerr << "Usage: " << name << " <option(s)>\n"
               << "Options:\n"
               << "    -h,--help";
@@ -38,7 +34,7 @@ void ArgParser::ArgParser::show_usage(std::string name) {
     }
 }
 
-void ArgParser::ArgParser::parse_args(int argc, char* argv[]) {
+void argparser::argparser::parse_args(int argc, char* argv[]) {
     if(argc < args_types.size() * 2) {
         show_usage(argv[0]);
         return;
@@ -69,7 +65,7 @@ void ArgParser::ArgParser::parse_args(int argc, char* argv[]) {
     }
 }
 
-void ArgParser::ArgParser::addArgHandler(std::string shrt, std::string full, std::string desc) {
+void argparser::argparser::addArgHandler(std::string shrt, std::string full, std::string desc) {
     std::tuple<std::string, std::string, std::string> t = std::make_tuple(shrt, full, desc);
     args_types.push_back(t);
 }
