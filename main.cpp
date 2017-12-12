@@ -1,26 +1,33 @@
-#include "ArgParser.h"
+#include "argparser.h"
 
-std::string args_types [][3] = {
-        {"-nsd",    "--number-of-standard-deviations",  "Number of standard deviations, which wile exceeded define pair-end as a suspect;"},
-        {"-nco",    "--number-of-outsiders",            "Number of consecutive outsiders that will cause program to break contig;"},
-        {"-sfp",    "--sam-file-path",                  "Set path to sam file with input data;"},
-        {"-fifp",   "--fasta-input-file-path",          "Set path to input fasta file with contigs;"},
-        {"-fofp",   "--fasta-output-file-path",         "Set path to output fasta file with contigs."}
+#include <vector>
+
+typedef argparser::__type Type;
+
+std::vector <Type>  args_types = {
+        Type("-sfp",    "--sam-file-path",                  "Set path to sam file with input data;"),
+        Type("-fifp",   "--fasta-input-file-path",          "Set path to input fasta file with contigs;"),
+        Type("-fofp",   "--fasta-output-file-path",         "Set path to output fasta file with contigs.")
 };
 
 int main(int argc, char * argv []) {
-    ArgParser::ArgParser parser;
+    argparser::argparser parser;
 
-    for(int i = 0; i < (sizeof(args_types)/sizeof(*args_types)); ++i) {
-        parser.addArgHandler(args_types[i][0], args_types[i][1], args_types[i][2]);
+    for(int i = 0; i < args_types.size(); ++i) {
+        parser.addArgHandler(args_types[i]);
     }
 
-    parser.parse_args(argc, argv);
+    if(!parser.parse_args(argc, argv)) {
+        std::cout << "Sth went wrong!" << std::endl;
+        return 1;
+    } else {
+        std::cout << "Parsing OK!" << std::endl;
+    }
 
-    int nco = std::stoi(parser.args["-nco"]);
+    std::string fifp = parser.args["-fifp"];
     std::string sfp = parser.args["-sfp"];
-    double nsd = std::stod(parser.args["-nsd"]);
+    std::string fofp = parser.args["-fofp"];
 
-    std::cout << nco << ", " << nsd << ", " << sfp << std::endl;
+    std::cout << fifp << ", " << fofp << ", " << sfp << std::endl;
     return 0;
 }

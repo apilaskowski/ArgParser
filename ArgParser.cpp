@@ -26,25 +26,24 @@ void argparser::argparser::show_usage(std::string name) {
         std::cerr << " ";
     }
     std::cerr << "Show this help message;\n";
-    for(int i = 0; i < args_types.size(); ++i) {
+    for(int i = 0; i < this->args_types.size(); ++i) {
         std::string shrt, full, desc;
-        std::tie(shrt, full, desc) = args_types[i];
+        shrt = this->args_types[i].short_name;
+        full = this->args_types[i].long_name;
+        desc = this->args_types[i].description;
 
         std::cerr << "    " << shrt << "," << full << fill_space(shrt.size(), full.size()) << desc << "\n";
     }
 }
 
-void argparser::argparser::parse_args(int argc, char* argv[]) {
-    if(argc < args_types.size() * 2) {
-        show_usage(argv[0]);
-        return;
-    }
+bool argparser::argparser::parse_args(int argc, char* argv[]) {
     for(int i = 1; i < argc; ++i) {
         std::string arg = argv[i];
         bool arg_found = false;
-        for(int j = 0; j < args_types.size(); ++j) {
-            std::string shrt, full, _;
-            std::tie(shrt, full, _) = args_types[j];
+        for(int j = 0; j < this->args_types.size(); ++j) {
+            std::string shrt, full;
+            shrt = this->args_types[j].short_name;
+            full = this->args_types[j].long_name;
             if(arg == shrt || arg == full) {
                 if(i + 1 < argc) {
                     args.insert({shrt, argv[++i]});
@@ -56,16 +55,16 @@ void argparser::argparser::parse_args(int argc, char* argv[]) {
         if(!arg_found){
             if((arg == "-h") || (arg == "--help")) {
                 show_usage(argv[0]);
-                return;
+                return false;
             }
             std::cerr << "Unrecognized option: " << arg << std::endl;
             show_usage(argv[0]);
-            return;
+            return false;
         }
     }
+    return true;
 }
 
-void argparser::argparser::addArgHandler(std::string shrt, std::string full, std::string desc) {
-    std::tuple<std::string, std::string, std::string> t = std::make_tuple(shrt, full, desc);
+void argparser::argparser::addArgHandler(__type t) {
     args_types.push_back(t);
 }

@@ -14,19 +14,28 @@
 
 namespace argparser {
 
+    struct __type {
+        std::string short_name;
+        std::string long_name;
+        std::string description;
+
+        __type(std::string s, std::string l, std::string d) 
+            : short_name(s), long_name(l), description(d) {}
+    };
+
     class argparser {
     private:
-        std::vector<std::tuple<std::string, std::string, std::string>> args_types;
+        std::vector<__type> args_types;
     public:
         argparser();
         virtual ~argparser();
 
-        void parse_args(int, char *[]);
+        bool parse_args(int, char *[]);
         std::unordered_map<std::string, std::string> args;
 
         void show_usage(std::string);
 
-        void addArgHandler(std::string, std::string, std::string);
+        void addArgHandler(__type);
     };
 
 }
