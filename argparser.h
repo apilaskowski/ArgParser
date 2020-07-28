@@ -18,9 +18,10 @@ namespace argparser {
         std::string short_name;
         std::string long_name;
         std::string description;
+        bool binary;
 
-        __type(std::string s, std::string l, std::string d) 
-            : short_name(s), long_name(l), description(d) {}
+        __type(std::string s, std::string l, std::string d, bool b=false) 
+            : short_name(s), long_name(l), description(d), binary(b) {}
     };
 
     class argparser {
@@ -36,6 +37,8 @@ namespace argparser {
         void show_usage(std::string);
 
         void addArgHandler(__type);
+
+        bool exists(std::string);
     };
 
 }

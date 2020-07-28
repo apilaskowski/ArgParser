@@ -32,7 +32,12 @@ void argparser::argparser::show_usage(std::string name) {
         full = this->args_types[i].long_name;
         desc = this->args_types[i].description;
 
-        std::cerr << "    " << shrt << "," << full << fill_space(shrt.size(), full.size()) << desc << "\n";
+        std::cerr << "    " << shrt << "," << full << fill_space(shrt.size(), full.size()) << desc;
+        if(i + 1 == this->args_types.size()) {
+            std::cerr << ".\n";
+        } else {
+            std::cerr << ";\n";
+        }
     }
 }
 
@@ -44,22 +49,37 @@ bool argparser::argparser::parse_args(int argc, char* argv[]) {
             std::string shrt, full;
             shrt = this->args_types[j].short_name;
             full = this->args_types[j].long_name;
+            bool bin  = this->args_types[j].binary;
             if(arg == shrt || arg == full) {
-                if(i + 1 < argc) {
+                if(bin == true) {
+                    args.insert({shrt, "true"});
+                    args.insert({full, "true"});
+                    arg_found = true;
+                    break;
+                } else if(i + 1 < argc) {
                     args.insert({shrt, argv[++i]});
+                    args.insert({full, argv[i]});
                     arg_found = true;
                     break;
                 }
             }
         }
         if(!arg_found){
-            if((arg == "-h") || (arg == "--help")) {
-                show_usage(argv[0]);
-                return false;
+            if((arg != "-h") && (arg != "--help")) {
+                std::cerr << "Unrecognized option: " << arg << std::endl;
             }
-            std::cerr << "Unrecognized option: " << arg << std::endl;
             show_usage(argv[0]);
             return false;
+        }
+    }
+    for(int i = 0; i < this->args_types.size(); ++i) {
+        std::string shrt, full;
+        shrt = this->args_types[i].short_name;
+        full = this->args_types[i].long_name;
+        bool bin  = this->args_types[i].binary;
+        if(bin == true && args.count(shrt) == 0) {
+            args.insert({shrt, "false"});
+            args.insert({full, "false"});
         }
     }
     return true;
@@ -67,4 +87,8 @@ bool argparser::argparser::parse_args(int argc, char* argv[]) {
 
 void argparser::argparser::addArgHandler(__type t) {
     args_types.push_back(t);
+}
+
+bool argparser::argparser::exists(std::string argument_name) {
+    return args.count(argument_name);
 }
