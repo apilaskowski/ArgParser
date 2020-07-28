@@ -1,33 +1,50 @@
-#include "argparser.h"
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <sys/stat.h>
+#include <filesystem>
 
-#include <vector>
+#include "argparser.h"
 
 typedef argparser::__type Type;
 
-std::vector <Type>  args_types = {
-        Type("-sfp",    "--sam-file-path",                  "Set path to sam file with input data;"),
-        Type("-fifp",   "--fasta-input-file-path",          "Set path to input fasta file with contigs;"),
-        Type("-fofp",   "--fasta-output-file-path",         "Set path to output fasta file with contigs.")
+std::vector <Type> args_types = {
+    Type("-ta", "--typical-argument", "Some typical argument"),
+    Type("-ata", "--another-typical-argument", "Another typical argument"),
+    Type("-siva", "--some-integer-value-argument", "Some argument with an integer value"),
+    Type("-eba", "--example-of-binary-argument", "An example of a binary argument", true)
 };
 
-int main(int argc, char * argv []) {
+int main(int argc, char *argv[]) {
+    std::ios_base::sync_with_stdio(false);
+
     argparser::argparser parser;
 
     for(int i = 0; i < args_types.size(); ++i) {
         parser.addArgHandler(args_types[i]);
     }
 
-    if(!parser.parse_args(argc, argv)) {
-        std::cout << "Sth went wrong!" << std::endl;
-        return 1;
-    } else {
-        std::cout << "Parsing OK!" << std::endl;
+    parser.parse_args(argc, argv);
+
+    std::cerr << "Args: " << std::endl;
+    for(auto el: parser.args) {
+        std::cerr << el.first << ": " << el.second << std::endl;
+    } std::cerr << std::endl << "---------" << std::endl << std::endl;
+
+    try {
+        std::string typical_argument = parser.handle_argument("--typical-argument");
+        std::string another_typical_argument = parser.handle_argument("--another-typical-argument", "Some default value");
+        std::string binary_argument = parser.handle_argument("--example-of-binary-argument");
+        int integer_value = std::stoi(parser.handle_argument("--some-integer-value-argument")); 
+
+        std::cerr << "Typical argument: " << typical_argument << std::endl;
+        std::cerr << "Another typical argument: " << another_typical_argument << std::endl;
+        std::cerr << "Binary argument: " << binary_argument << std::endl;
+        std::cerr << "Integer: " << integer_value << std::endl;
+    } catch(std::string e) {
+        std::cerr << e << std::endl;
+        return 0;
     }
 
-    std::string fifp = parser.args["-fifp"];
-    std::string sfp = parser.args["-sfp"];
-    std::string fofp = parser.args["-fofp"];
-
-    std::cout << fifp << ", " << fofp << ", " << sfp << std::endl;
     return 0;
 }

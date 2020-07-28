@@ -39,6 +39,8 @@ namespace argparser {
         void addArgHandler(__type);
 
         bool exists(std::string);
+
+        std::string handle_argument(std::string argument, std::string default_value="");
     };
 
 }

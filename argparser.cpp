@@ -92,3 +92,15 @@ void argparser::argparser::addArgHandler(__type t) {
 bool argparser::argparser::exists(std::string argument_name) {
     return args.count(argument_name);
 }
+
+std::string argparser::argparser::handle_argument(std::string param, std::string default_value) {
+    std::string argument_value = "";
+    if(this->exists(param)) {
+        return this->args[param];
+    } else if(default_value == "") {
+        std::cerr << "Missing " << param << " param" << std::endl;
+        this->show_usage("<binary>");
+        throw "Missing " + param + " param";
+    }
+    return default_value;
+}
